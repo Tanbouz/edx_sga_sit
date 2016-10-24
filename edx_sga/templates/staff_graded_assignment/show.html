@@ -1,13 +1,10 @@
 {% load i18n %}
 
-<div class="sga-block" data-state="{{ student_state }}" data-max-size="{{ max_file_size }}"
+<div class="sga-block" data-state="{{ student_state }}"
      data-staff="{{ is_course_staff }}">
   <script type="text/template" id="sga-tmpl">
-    <% if (display_name) { %>
-       <b><%= display_name %></b>
-    <% } %>
     <% if (uploaded) { %>
-      <p><b>File uploaded</b> 
+      <p><b>File uploaded</b>
         <a href="<%= downloadUrl %>"><%= uploaded.filename %></a></p>
     <% } else { %>
       <p>No file has been uploaded.</p>
@@ -48,20 +45,16 @@
 
   {% if is_course_staff %}
   <script type="text/template" id="sga-grading-tmpl">
-    <table class="gridtable tablesorter" id="submissions">
-      <thead>
+    <table class="gridtable">
       <tr>
-        <th class="header">Username <i class="icon fa fa-sort"/></th>
-        <th class="header">Name <i class="icon fa fa-sort"/></th>
-        <th class="header">Filename <i class="icon fa fa-sort"/></th>
-        <th class="header">Uploaded <i class="icon fa fa-sort"/></th>
-        <th class="header">Grade <i class="icon fa fa-sort"/></th>
-        <th class="header">Instructor's comments <i class="icon fa fa-sort"/></th>
-        <th class="header">Annotated <i class="icon fa fa-sort"/></th>
-        <th class="header" colspan="2">Actions</th>
+        <th>Username</th>
+        <th>Name</th>
+        <th>Filename</th>
+        <th>Uploaded</th>
+        <th>Grade</th>
+        <th>Instructor's comments</th>
+        <th>Annotated</th>
       </tr>
-      </thead>
-      <tbody>
       <% for (var i = 0; i < assignments.length; i++) { %>
       <%     var assignment = assignments[i]; %>
         <tr id="row-<%= assignment.module_id %>">
@@ -94,14 +87,14 @@
           </td>
           <td>
             <% if (assignment.may_grade) { %>
-              <a class="enter-grade-button button" href="#{{ id }}-enter-grade">
+              <a class="enter-grade-button" href="#{{ id }}-enter-grade">
                 <% if (assignment.needs_approval) { %>
                   {% trans "Approve grade" %}
                 <% } else { %>
                   {% trans "Enter grade" %}
                 <% } %>
               </a>
-           <% } %>
+            <% } %>
           </td>
           <td>
             <div class="upload">
@@ -111,7 +104,6 @@
           </td>
         </tr>
       <% } %>
-      </tbody>
     </table>
   </script>
 
@@ -122,9 +114,13 @@
        href="#{{ id }}-debug">{% trans "Staff Debug Info" %}</a>
   </div>
 
-  <section aria-hidden="true" class="modal " id="{{ id }}-grade" style="height: 75%">
+  <section aria-hidden="true" class="modal staff-modal" id="{{ id }}-grade" style="height: 75%; width:90%; background: rgb(245, 245, 245);">
     <div class="inner-wrapper" style="color: black; overflow: auto;">
-      <header><h2><span class="display_name">{{ display_name }}</span> - {% trans "Staff Graded Assignment" %}</h2></header>
+
+      <header>
+        <button type="button" id="close-all" class="close" onclick="hideBox()">&times;</button>
+        <h2>{% trans "Staff Graded Assignment" %}</h2>
+      </header>
       <br/>
       <div id="grade-info" style="display: block;">
         Loading...
@@ -157,8 +153,8 @@
     </div>
   </section>
 
-  <section aria-hidden="true" class="modal grade-modal" id="{{ id }}-enter-grade">
-    <div class="inner-wrapper" style="color: black">
+  <section aria-hidden="true" class="modal grade-modal" id="{{ id }}-enter-grade" style="width:90%; background: rgb(245, 245, 245)">
+    <div class="inner-wrapper" style="color: black;">
       <header><h2>
         {% trans "Enter Grade" %}
       </h2></header>
@@ -186,3 +182,16 @@
   </section>
   {% endif %}
 </div>
+
+<script type="text/javascript">
+  function hideBox() {
+        document.getElementById("{{ id }}-grade").style.display="none";
+        document.getElementById("lean_overlay").style.display="none";
+    }
+    document.getElementById("close-all").click = hideBox;
+  function openLean() {
+    document.getElementById("lean_overlay").style.display="block";
+    document.getElementById("lean_overlay").style.opacity="0.5";
+  }
+    document.getElementById("grade-submissions-button").click = openLean;
+</script>
